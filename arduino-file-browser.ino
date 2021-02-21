@@ -13,7 +13,7 @@ U8X8_SSD1306_128X32_UNIVISION_SW_I2C u8x8(screenClockPin, screenDataPin);
 
 File root;
 
-int fileCount, dirCount;
+int fileCount, dirCount, firstFileNumber, lastFileNumber;
 
 void setup() {
   //setup screen
@@ -38,17 +38,29 @@ void setup() {
   String countLabel = "File Count: ";
   countLabel.concat(fileCount);
   u8x8.print(countLabel);
+
+  firstFileNumber = 1; 
+  lastFileNumber = 4;
   
   delay(500);
 
-  u8x8.clear();
-  u8x8.setCursor(0,0);
-
-  u8x8.print(getFileName(root, 1));
+  refreshMenu();
 }
 
 void loop() {
   
+}
+
+void refreshMenu() {
+  int count = 0;
+  
+  u8x8.clear();
+  
+  for(int i = firstFileNumber; i <= lastFileNumber; i++) {
+    u8x8.setCursor(0,count);
+    u8x8.print(getFileName(root, i));
+    count++;
+  }
 }
 
 void setFileCounts(File dir, int & dirCount, int & fileCount) {
