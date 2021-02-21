@@ -15,7 +15,15 @@ File root;
 
 int fileCount, dirCount, firstFileNumber, lastFileNumber;
 
+int testButtonPin = 10;
+
+boolean goingDown = true;
+
+String fileNames[16] = {};
+
 void setup() {
+  pinMode(testButtonPin, INPUT_PULLUP);
+  
   //setup screen
   u8x8.begin();
   u8x8.clear();
@@ -30,25 +38,49 @@ void setup() {
   }
 
   u8x8.print("SD Card Ready.");
-
+  
   u8x8.setCursor(0,2);
   root = SD.open("/");
-  setFileCounts(root, dirCount, fileCount);
+  setFileCounts(root);
 
   String countLabel = "File Count: ";
   countLabel.concat(fileCount);
   u8x8.print(countLabel);
 
-  firstFileNumber = 1; 
-  lastFileNumber = 4;
-  
-  delay(500);
+  firstFileNumber = 0; 
+  lastFileNumber = 3;
 
   refreshMenu();
 }
 
 void loop() {
-  
+  if (digitalRead(testButtonPin) == LOW) {
+     if(goingDown) {
+      firstFileNumber++;
+      lastFileNumber++;
+     }
+
+     if(!goingDown) {
+      firstFileNumber--;
+      lastFileNumber--;
+     }
+
+     if(lastFileNumber == fileCount) {
+      goingDown = false;
+     }
+     
+     if(firstFileNumber == 0) {
+      goingDown = true;
+     }
+
+     u8x8.clear();
+     u8x8.setCursor(15,1);
+     u8x8.print(firstFileNumber);
+     u8x8.setCursor(15,2);
+     u8x8.print(lastFileNumber);
+     
+     refreshMenu();
+  }
 }
 
 void refreshMenu() {
@@ -58,12 +90,12 @@ void refreshMenu() {
   
   for(int i = firstFileNumber; i <= lastFileNumber; i++) {
     u8x8.setCursor(0,count);
-    u8x8.print(getFileName(root, i));
+    u8x8.print(fileNames[i]);
     count++;
   }
 }
 
-void setFileCounts(File dir, int & dirCount, int & fileCount) {
+void setFileCounts(File dir) {
   dirCount = 0;
   fileCount = 0;
   
@@ -74,30 +106,10 @@ void setFileCounts(File dir, int & dirCount, int & fileCount) {
       break;
     } else {
       if(!entry.isDirectory()) {
+        fileNames[fileCount] = entry.name();
         fileCount++;
       } else {
         dirCount++;
-      }
-    }
-  }
-}
-
-char * getFileName(File dir, int fileNumber) {
-  int fileCount = 0;
-  
-  while(true) {
-    File entry = dir.openNextFile();
-    
-    if(!entry) {
-      dir.rewindDirectory();
-    } else {
-      if(!entry.isDirectory()){
-        fileCount++;
-  
-        if(fileCount == fileNumber) {
-          dir.rewindDirectory();
-          return entry.name();
-        }
       }
     }
   }
