@@ -45,7 +45,7 @@ void setup() {
   refreshMenu();
   
   u8x8.setCursor(0, selectedLine);
-  u8x8.print(">" + fileNames[firstOption + selectedLine]);
+  u8x8.print(">" + cleanFileName(fileNames[firstOption + selectedLine]));
 }
 
 void loop() {
@@ -55,9 +55,15 @@ void loop() {
   }
 }
 
+String cleanFileName(String fileName) {
+  fileName.substring(0,15);
+  fileName.replace(".TXT","");
+  return fileName;
+}
+
 void moveSelector() {
   u8x8.setCursor(0,selectedLine);
-  u8x8.print(" " + fileNames[firstOption + selectedLine]);
+  u8x8.print(" " + cleanFileName(fileNames[firstOption + selectedLine]));
   selectedLine++;
   
   if(selectedLine == linePerPage) {
@@ -73,7 +79,7 @@ void moveSelector() {
   }
 
   u8x8.setCursor(0,selectedLine);
-  u8x8.print(">" + fileNames[firstOption + selectedLine]);
+  u8x8.print(">" + cleanFileName(fileNames[firstOption + selectedLine]));
 }
 
 void refreshMenu() {
@@ -83,7 +89,7 @@ void refreshMenu() {
   
   for(int i = firstOption; i <= firstOption + linePerPage; i++) {
     u8x8.setCursor(0,count);
-    u8x8.print(" " + fileNames[i]);
+    u8x8.print(" " + cleanFileName(fileNames[i]));
     count++;
   }
 }
