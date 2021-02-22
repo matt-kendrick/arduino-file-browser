@@ -4,21 +4,16 @@
 
 #include <U8x8lib.h>
 
-int screenDataPin = 2;
-int screenClockPin = 3;
-
-int sdChipSelectPin = 4;
+const int screenDataPin = 2;
+const int screenClockPin = 3;
+const int sdChipSelectPin = 4;
+const int testButtonPin = 10;
+const int linePerPage = 4;
 
 U8X8_SSD1306_128X32_UNIVISION_SW_I2C u8x8(screenClockPin, screenDataPin);
 
 File root;
-
-int fileCount, dirCount, firstFileNumber, lastFileNumber;
-
-int testButtonPin = 10;
-
-boolean goingDown = true;
-
+int fileCount, firstOption, selectedLine;
 String fileNames[16] = {};
 
 void setup() {
@@ -47,40 +42,38 @@ void setup() {
   countLabel.concat(fileCount);
   u8x8.print(countLabel);
 
-  firstFileNumber = 0; 
-  lastFileNumber = 3;
-
   refreshMenu();
+  
+  u8x8.setCursor(0, selectedLine);
+  u8x8.print(">" + fileNames[firstOption + selectedLine]);
 }
 
 void loop() {
   if (digitalRead(testButtonPin) == LOW) {
-     if(goingDown) {
-      firstFileNumber++;
-      lastFileNumber++;
-     }
-
-     if(!goingDown) {
-      firstFileNumber--;
-      lastFileNumber--;
-     }
-
-     if(lastFileNumber == fileCount) {
-      goingDown = false;
-     }
-     
-     if(firstFileNumber == 0) {
-      goingDown = true;
-     }
-
-     u8x8.clear();
-     u8x8.setCursor(15,1);
-     u8x8.print(firstFileNumber);
-     u8x8.setCursor(15,2);
-     u8x8.print(lastFileNumber);
-     
-     refreshMenu();
+     moveSelector();
+     delay(500);
   }
+}
+
+void moveSelector() {
+  u8x8.setCursor(0,selectedLine);
+  u8x8.print(" " + fileNames[firstOption + selectedLine]);
+  selectedLine++;
+  
+  if(selectedLine == linePerPage) {
+    selectedLine = 0;
+
+    if(firstOption + linePerPage >= fileCount) {
+      firstOption = 0;
+    } else {
+      firstOption += linePerPage;
+    }
+
+    refreshMenu();
+  }
+
+  u8x8.setCursor(0,selectedLine);
+  u8x8.print(">" + fileNames[firstOption + selectedLine]);
 }
 
 void refreshMenu() {
@@ -88,15 +81,14 @@ void refreshMenu() {
   
   u8x8.clear();
   
-  for(int i = firstFileNumber; i <= lastFileNumber; i++) {
+  for(int i = firstOption; i <= firstOption + linePerPage; i++) {
     u8x8.setCursor(0,count);
-    u8x8.print(fileNames[i]);
+    u8x8.print(" " + fileNames[i]);
     count++;
   }
 }
 
 void setFileCounts(File dir) {
-  dirCount = 0;
   fileCount = 0;
   
   while(true) {
@@ -108,8 +100,6 @@ void setFileCounts(File dir) {
       if(!entry.isDirectory()) {
         fileNames[fileCount] = entry.name();
         fileCount++;
-      } else {
-        dirCount++;
       }
     }
   }
