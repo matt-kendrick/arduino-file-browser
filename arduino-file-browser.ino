@@ -7,15 +7,15 @@
 /*
  * Pin 2 - OLED Data (SDA)
  * Pin 3 - OLED Clock (SCK)
- * Pin 4 - SD Chip Select (CS)
- * Pin 11 - SD (MOSI)
- * Pin 12 - SD (MISO)
- * Pin 13 - SD (CLK)
+ * Pin 18 - SD Chip Select (CS)
+ * Pin 15 - SD (CLK)
+ * Pin 14 - SD (MISO)
+ * Pin 16 - SD (MOSI)
  */
 
 const int screenDataPin = 2;
 const int screenClockPin = 3;
-const int sdChipSelectPin = 4;
+const int sdChipSelectPin = 18;
 const int testButtonPin = 10;
 const int linePerPage = 4;
 
