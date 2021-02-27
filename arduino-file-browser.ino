@@ -4,6 +4,15 @@
 
 #include <U8x8lib.h>
 
+/*
+ * Pin 2 - OLED Data (SDA)
+ * Pin 3 - OLED Clock (SCK)
+ * Pin 4 - SD Chip Select (CS)
+ * Pin 11 - SD (MOSI)
+ * Pin 12 - SD (MISO)
+ * Pin 13 - SD (CLK)
+ */
+
 const int screenDataPin = 2;
 const int screenClockPin = 3;
 const int sdChipSelectPin = 4;
