@@ -27,7 +27,6 @@ String fileNames[16] = {};
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial);
 
   Keyboard.begin();
   
